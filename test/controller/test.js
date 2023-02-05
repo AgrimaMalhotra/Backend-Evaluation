@@ -2,10 +2,12 @@ const service = require('../../src/services/company');
 const controller = require('../../src/controllers/company');
 const utils = require('../../src/utils/csvToJson');
 const axios = require('axios');
-
 jest.mock('axios');
+
 describe('Test Controller', () => {
+
   describe('Post API', () => {
+
     it('Should return all tasks', async () => {
       const axiosData = '95b,IT\n95b,IT\n';
       const mockCompany = [{
@@ -91,4 +93,69 @@ describe('Test Controller', () => {
       expect(mockRes.json).toBeCalledWith({ message: 'csv file is empty' });
     });
   });
+
+
+  describe('Get Ranking API', () => {
+    const mockRes = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    it('Should return all tasks according to their ranking', async () => {
+      const mockReq = {
+        query: {
+          sector: 'Software'
+        }
+      };
+      const mockResult = [{
+        companyId: '95b',
+        name: 'Tesla',
+        ceo: 'Musk',
+        tags: ['automotive'],
+        employeeCount: 10000,
+        sector: {
+          score: 20
+        }
+      },
+      {
+        companyId: '97b',
+        name: 'Google',
+        ceo: 'Pichai',
+        tags: ['software'],
+        employeeCount: 1000000,
+        sector: {
+          score: 10
+        }
+      }
+      ];
+      jest.spyOn(service, 'getCompanyRanking').mockResolvedValue(mockResult);
+      await controller.getCompanyRanking(mockReq, mockRes);
+      expect(mockRes.status).toBeCalledWith(200);
+      expect(mockRes.json).toBeCalledWith(mockResult);
+    });
+    it('Should return error if no sector mentioned', async () => {
+      const mockResult = [];
+      const mockReq = {
+        query: {
+          sector: undefined
+        }
+      };
+      jest.spyOn(service, 'getCompanyRanking').mockResolvedValue(mockResult);
+      await controller.getCompanyRanking(mockReq, mockRes);
+      expect(mockRes.status).toBeCalledWith(400);
+      expect(mockRes.json).toBeCalledWith({ message: 'Sector is not defined' });
+    });
+    it('Should return error if no data for sector found', async () => {
+      const mockResult = null;
+      const mockReq = {
+        query: {
+          sector: 'Software'
+        }
+      };
+      jest.spyOn(service, 'getCompanyRanking').mockResolvedValue(mockResult);
+      await controller.getCompanyRanking(mockReq, mockRes);
+      expect(mockRes.status).toBeCalledWith(400);
+      expect(mockRes.json).toBeCalledWith({ message: 'No data found' });
+    });
+  });
 });
+
