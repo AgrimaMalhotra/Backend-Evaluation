@@ -1,11 +1,13 @@
 const models = require('../../database/models');
+const sequelize = require('sequelize');
 
 const createCompanyDetails = async (companyDetails) => {
-  const company = models.company.create({ companyId: companyDetails.id, name: companyDetails.name, ceo: companyDetails.ceo, tags: companyDetails.tags, employeeCount: Number(companyDetails.numberEmployees) });
+  const company = models.company.create({ companyId: companyDetails.id, name: companyDetails.name, ceo: companyDetails.ceo, tags: companyDetails.tags });
   return company;
 }
 
 const createSectorDetails = async (sectorName, sectorDetails) => {
+  console.log(sectorDetails);
   const entry = {
     sectorName: sectorName,
     companyId: sectorDetails.companyId
@@ -26,4 +28,14 @@ const getData = async () => {
   return company;
 }
 
-module.exports = { createCompanyDetails, createSectorDetails, getData };
+const getCompanyRanking = async (sectorName) => {
+  const company = await models.sector.findAll({
+    where: { sectorName: sectorName },
+    attributes: ['score', [sequelize.literal('(DENSE_RANK() OVER (ORDER BY score DESC))'), 'rank']],
+    include: [{
+      model: models.company,
+    }]
+  });
+  return company;
+}
+module.exports = { createCompanyDetails, createSectorDetails, getData, getCompanyRanking };
