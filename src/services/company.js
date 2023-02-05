@@ -38,4 +38,11 @@ const getCompanyRanking = async (sectorName) => {
   });
   return company;
 }
-module.exports = { createCompanyDetails, createSectorDetails, getData, getCompanyRanking };
+
+const updateCompanyDetails = async (companyDetails, id) => {
+  await models.company.update(companyDetails, { where: { companyId: id } });
+  const newDetails = await models.company.findOne({ where: { companyId: id } });
+  return newDetails;
+}
+
+module.exports = { createCompanyDetails, createSectorDetails, getData, getCompanyRanking, updateCompanyDetails };
