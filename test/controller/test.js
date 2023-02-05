@@ -157,5 +157,50 @@ describe('Test Controller', () => {
       expect(mockRes.json).toBeCalledWith({ message: 'No data found' });
     });
   });
+  describe('Update Company API', () => {
+    const mockRes = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    it('Should update the company details', async () => {
+      const mockReq = {
+        body: {
+          name: 'Tesla',
+          ceo: 'Musk',
+        },
+        query: {
+          id: '95b'
+        }
+      };
+      const mockResult = {
+        companyId: '95b',
+        name: 'Tesla',
+        ceo: 'Musk',
+        tags: ['automotive'],
+        employeeCount: 10000,
+      };
+      jest.spyOn(service, 'updateCompanyDetails').mockResolvedValue(mockResult);
+      await controller.updateCompanyDetails(mockReq, mockRes);
+      expect(mockRes.status).toBeCalledWith(200);
+      expect(mockRes.json).toBeCalledWith(mockResult);
+    });
+    it('Should throw error if no data updated ', async () => {
+      const mockReq = {
+        body: {
+          name: 'Tesla',
+          ceo: 'Musk',
+        },
+        query: {
+          id: '95b'
+        }
+      };
+      const mockResult = null;
+      jest.spyOn(service, 'updateCompanyDetails').mockResolvedValue(mockResult);
+      await controller.updateCompanyDetails(mockReq, mockRes);
+      expect(mockRes.status).toBeCalledWith(400);
+      expect(mockRes.json).toBeCalledWith({ message: 'No data updated' });
+    });
+  });
+
 });
 
