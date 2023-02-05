@@ -106,4 +106,21 @@ describe('SERVICES', () => {
       expect(result).toEqual(companyDbDetails);
     });
   });
+  describe('updateCompanyDetails', () => {
+    it('should update company details', async () => {
+      const newDetails = {
+        id: '95b',
+        name: 'Volkswagen',
+        ceo: 'Marshall Kautzer',
+      };
+      const input = {
+        name: 'Volkswagen',
+        ceo: 'Marshall Kautzer',
+      }
+      jest.spyOn(models.company, 'update').mockResolvedValue(1);
+      jest.spyOn(models.company, 'findOne').mockResolvedValue(newDetails);
+      const result = await services.updateCompanyDetails(input);
+      expect(result).toEqual(newDetails);
+    });
+  });
 });
