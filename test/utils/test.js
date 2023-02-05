@@ -6,6 +6,7 @@ describe('Test Utils', () => {
     expect(csvJson(data)).toEqual([{ company_id: '95b', company_sector: 'Automobile' }, { company_id: '46e', company_sector: 'Software' }]);
   });
   it('should return error if input empty', () => {
-    expect(() => csvJson()).toThrow('csvStr is undefined');
+    const data = '';
+    expect(() => csvJson(data)).toThrow('csvStr is undefined');
   });
 });
