@@ -9,9 +9,9 @@ const createDb = async (req, res) => {
     const jsonObj = utils.csvJson(file);
     let companyId = [], companySector = [];
 
-    for (const obj in jsonObj) {
-      companyId.push(obj.company_id);
-      companySector.push(obj.company_sector);
+    for (let i = 0; i < jsonObj.length; i++) {
+      companyId.push(jsonObj[i].company_id);
+      companySector.push(jsonObj[i].company_sector);
     }
 
     for (const id of companyId) {
@@ -33,4 +33,20 @@ const createDb = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 }
-module.exports = { createDb, };
+
+const getCompanyRanking = async (req, res) => {
+  try {
+    if (req.query.sector === undefined) {
+      throw new Error('Sector is not defined');
+    }
+    const companyData = await services.getCompanyRanking(req.query.sector);
+    if (companyData === null) {
+      throw new Error('No data found');
+    }
+    res.status(200).json(companyData);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+
+module.exports = { createDb, getCompanyRanking };
