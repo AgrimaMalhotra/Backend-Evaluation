@@ -49,4 +49,15 @@ const getCompanyRanking = async (req, res) => {
   }
 }
 
-module.exports = { createDb, getCompanyRanking };
+const updateCompanyDetails = async (req, res) => {
+  try {
+    const companyData = await services.updateCompanyDetails(req.body, req.query.id);
+    if (companyData === null) {
+      throw new Error('No data updated');
+    }
+    res.status(200).json(companyData);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+module.exports = { createDb, getCompanyRanking, updateCompanyDetails };
