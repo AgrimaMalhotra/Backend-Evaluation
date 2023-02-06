@@ -100,7 +100,7 @@ describe('SERVICES', () => {
     ];
     it('should return companies ranked according to their score', async () => {
 
-      jest.spyOn(models.sector, 'findAll').mockResolvedValue(companyDbDetails);
+      jest.spyOn(models.company, 'findAll').mockResolvedValue(companyDbDetails);
 
       const result = await services.getCompanyRanking();
       expect(result).toEqual(companyDbDetails);
