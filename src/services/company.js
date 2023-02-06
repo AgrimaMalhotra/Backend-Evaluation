@@ -7,7 +7,6 @@ const createCompanyDetails = async (companyDetails) => {
 }
 
 const createSectorDetails = async (sectorName, sectorDetails) => {
-  console.log(sectorDetails);
   const entry = {
     sectorName: sectorName,
     companyId: sectorDetails.companyId
@@ -25,15 +24,16 @@ const getData = async () => {
       attributes: ['score']
     }]
   });
+
   return company;
 }
 
 const getCompanyRanking = async (sectorName) => {
-  const company = await models.sector.findAll({
-    where: { sectorName: sectorName },
-    attributes: ['score', [sequelize.literal('(DENSE_RANK() OVER (ORDER BY score DESC))'), 'rank']],
+  const company = await models.company.findAll({
     include: [{
-      model: models.company,
+      model: models.sector,
+      where: { sectorName: sectorName },
+      attributes: ['score', [sequelize.literal('(DENSE_RANK() OVER (ORDER BY score DESC))'), 'rank']],
     }]
   });
   return company;
